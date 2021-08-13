@@ -79,7 +79,7 @@ func (p *ParamExp) ToString() string {
 
 type FuncExp struct {
 	Name string
-	Arg  []Expression
+	Args  []Expression
 }
 
 func (f *FuncExp) Eval() float64  {
@@ -87,12 +87,12 @@ func (f *FuncExp) Eval() float64  {
 		return 0
 	}
 	def := funcMap[f.Name]
-	return def.function(f.Arg...)
+	return def.function(f.Args...)
 }
 
 func (f *FuncExp) ToString() string  {
 	var s string
-	for _, a := range f.Arg{
+	for _, a := range f.Args{
 		s += a.ToString() +" "
 	}
 	return fmt.Sprintf(

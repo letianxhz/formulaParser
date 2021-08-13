@@ -294,7 +294,7 @@ func (a *AST) getFunCallerExp() Expression {
 	a.getNextToken()
 	return &FuncExp{
 		Name: name,
-		Arg:  aes,
+		Args:  aes,
 	}
 }
 
