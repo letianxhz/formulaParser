@@ -127,7 +127,7 @@ func (p *Parser) nextTok() *Token {
 			var tokenType int
 			if _, ok := funcMap[name]; ok {
 				tokenType = Function
-			} else if _, ok := EvaluationContext[name]; ok {
+			} else if _, ok := ParamContext[name]; ok {
 				tokenType = Param
 			} else {
 				s := fmt.Sprintf("input str error: unknown '%v', pos [%v:]\n%s",
@@ -308,7 +308,7 @@ func (a *AST) getFunCallerExp() Expression {
 func (a *AST) getParamExp() Expression {
 	name := a.currTok.Tok
 	a.getNextToken()
-	if v, ok := EvaluationContext[name]; ok {
+	if v, ok := ParamContext[name]; ok {
 		return &ParamExp{
 			Val:  v.(float64),
 			Name: name,

@@ -63,10 +63,10 @@ type ParamExp struct {
 }
 
 func (p *ParamExp) Eval() float64  {
-	if _, ok := EvaluationContext[p.Name]; !ok {
+	if _, ok := ParamContext[p.Name]; !ok {
 		return 0
 	}
-	return EvaluationContext[p.Name].(float64)
+	return ParamContext[p.Name].(float64)
 }
 
 func (p *ParamExp) ToString() string {

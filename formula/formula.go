@@ -11,7 +11,7 @@ import (
 var FormulaCache = make(map[string]Expression)
 
 //上下文信息用于传公式依赖的参数
-var EvaluationContext = make(map[string]interface{})
+var ParamContext = make(map[string]interface{})
 
 //定义的函数实现
 type funcInfo struct {
@@ -30,10 +30,10 @@ var funcMap = map[string]funcInfo{
 
 	"ahasbuff": {1, func(expr ...Expression) float64 {
 		buffId := strconv.FormatFloat(expr[0].Eval(), 'f', 0, 64)
-		if _, ok := EvaluationContext["buffa"]; !ok {
+		if _, ok := ParamContext["buffa"]; !ok {
 			return 0
 		}
-		buffs := EvaluationContext["buffa"].(map[string]bool)
+		buffs := ParamContext["buffa"].(map[string]bool)
 		if _, ok := buffs[buffId]; ok {
 			return 1
 		}
@@ -42,10 +42,10 @@ var funcMap = map[string]funcInfo{
 
 	"dhasbuff": {1, func(expr ...Expression) float64 {
 		buffId := strconv.FormatFloat(expr[0].Eval(), 'f', 0, 64)
-		if _, ok := EvaluationContext["buffb"]; !ok {
+		if _, ok := ParamContext["buffb"]; !ok {
 			return 0
 		}
-		buffs := EvaluationContext["buffb"].(map[string]bool)
+		buffs := ParamContext["buffb"].(map[string]bool)
 		if _, ok := buffs[buffId]; ok {
 			return 1
 		}
@@ -54,7 +54,7 @@ var funcMap = map[string]funcInfo{
 }
 
 func SetContext(ctx map[string]interface{})  {
-	EvaluationContext = ctx
+	ParamContext = ctx
 }
 
 func AddAstExpCache(exp string, e Expression)  {
