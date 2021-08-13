@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 const (
@@ -72,31 +73,15 @@ func (p *Parser) nextTok() *Token {
 	}
 	start := p.offset
 	var tok *Token
-	switch p.char {
-	case
-		'(',
-		')',
-		'+',
-		'-',
-		'*',
-		'/':
+
+	if isOperator(p.char) {
 		tok = &Token{
 			Tok:  string(p.char),
 			Type: Operator,
 		}
 		tok.Offset = start
 		p.nextChar()
-	case
-		'0',
-		'1',
-		'2',
-		'3',
-		'4',
-		'5',
-		'6',
-		'7',
-		'8',
-		'9':
+	} else if isNumber(p.char) {
 		for p.isDigitNum(p.char) && p.nextChar() {
 			if p.char == '-' || p.char == '+' {
 				break
@@ -107,7 +92,7 @@ func (p *Parser) nextTok() *Token {
 			Type: Literal,
 		}
 		tok.Offset = start
-	case ',':
+	} else if p.char == ',' {
 		tok = &Token{
 			Tok:  string(p.char),
 			Type: COMMA,
@@ -119,7 +104,7 @@ func (p *Parser) nextTok() *Token {
 				ErrPos(p.Str, start))
 			p.err = errors.New(s)
 		}
-	default:
+	} else {
 		if p.isChar(p.char) {
 			for p.isWordChar(p.char) && p.nextChar() {
 			}
@@ -150,6 +135,14 @@ func (p *Parser) nextTok() *Token {
 		}
 	}
 	return tok
+}
+
+func isOperator(b byte) bool {
+	return b == '(' || b == ')' || b == '+' || b == '-' || b == '*' || b == '/'
+}
+
+func isNumber(b byte) bool {
+	return unicode.IsDigit(rune(b))
 }
 
 func (p *Parser) nextChar() bool {
@@ -216,7 +209,7 @@ func (a *AST) ParseExpression() Expression {
 	a.depth--
 	if a.depth == 0 && a.currIndex != len(a.Tokens) && a.Err == nil {
 		a.Err = errors.New(
-			fmt.Sprintf("errot expression, reaching the end or missing the operator\n%s",
+			fmt.Sprintf("error expression, reaching the end or miss the operator\n%s",
 				ErrPos(a.source, a.currTok.Offset)))
 	}
 	return r
