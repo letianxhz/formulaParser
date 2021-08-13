@@ -25,7 +25,7 @@ type Token struct {
 
 type AST struct {
 	Tokens    []*Token
-	source    string
+	str    string
 	currTok   *Token
 	currIndex int
 	depth     int
@@ -188,7 +188,7 @@ func ErrPos(s string, pos int) string {
 func NewAST(tokens []*Token, s string) *AST {
 	a := &AST{
 		Tokens: tokens,
-		source: s,
+		str: s,
 	}
 	if a.Tokens == nil || len(a.Tokens) == 0 {
 		a.Err = errors.New("empty token")
@@ -210,7 +210,7 @@ func (a *AST) ParseExpression() Expression {
 	if a.depth == 0 && a.currIndex != len(a.Tokens) && a.Err == nil {
 		a.Err = errors.New(
 			fmt.Sprintf("error expression, reaching the end or miss the operator\n%s",
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 	}
 	return r
 }
@@ -239,7 +239,7 @@ func (a *AST) getConstantExp() *ConstantExp {
 			fmt.Sprintf("%v\n should be '(' or '0-9' but get '%s'\n%s",
 				err.Error(),
 				a.currTok.Tok,
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 		return &ConstantExp{}
 	}
 	n := ConstantExp{
@@ -256,7 +256,7 @@ func (a *AST) getFunCallerExp() Expression {
 		a.Err = errors.New(
 			fmt.Sprintf("func `%s` next char is \n%s it should be '(' ",
 				name,
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 		return nil
 	}
 
@@ -264,7 +264,7 @@ func (a *AST) getFunCallerExp() Expression {
 		a.Err = errors.New(
 			fmt.Sprintf("func `%s` is undefined\n%s",
 				name,
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 		return nil
 	}
 	aes := make([]Expression, 0)
@@ -282,14 +282,14 @@ func (a *AST) getFunCallerExp() Expression {
 				name,
 				def.argsCount,
 				len(aes),
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 	}
 
 	if a.currTok.Tok != ")" {
 		a.Err = errors.New(
 			fmt.Sprintf("func `%s` last char not is `)` \n%s ",
 				name,
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 	}
 	a.getNextToken()
 	return &FuncExp{
@@ -310,7 +310,7 @@ func (a *AST) getParamExp() Expression {
 		a.Err = errors.New(
 			fmt.Sprintf("param `%s` is undefined\n%s",
 				name,
-				ErrPos(a.source, a.currTok.Offset)))
+				ErrPos(a.str, a.currTok.Offset)))
 		return &ConstantExp{}
 	}
 }
@@ -336,7 +336,7 @@ func (a *AST) parseOperatorExp() Expression {
 		if t == nil {
 			a.Err = errors.New(
 				fmt.Sprintf("should be '0-9' but nothing at all\n%s",
-					ErrPos(a.source, a.currTok.Offset)))
+					ErrPos(a.str, a.currTok.Offset)))
 			return nil
 		}
 		e := a.ParseExpression()
@@ -347,7 +347,7 @@ func (a *AST) parseOperatorExp() Expression {
 			a.Err = errors.New(
 				fmt.Sprintf("should be ')' but get %s\n%s",
 					a.currTok.Tok,
-					ErrPos(a.source, a.currTok.Offset)))
+					ErrPos(a.str, a.currTok.Offset)))
 			return nil
 		}
 		a.getNextToken()
@@ -356,7 +356,7 @@ func (a *AST) parseOperatorExp() Expression {
 		if a.getNextToken() == nil {
 			a.Err = errors.New(
 				fmt.Sprintf("should be '0-9' but get '-'\n%s",
-					ErrPos(a.source, a.currTok.Offset)))
+					ErrPos(a.str, a.currTok.Offset)))
 			return nil
 		}
 		c := BinaryExp{
