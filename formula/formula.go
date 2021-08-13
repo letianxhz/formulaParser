@@ -79,7 +79,7 @@ func Exec(exp string) {
 		fmt.Println("ERROR: " + ast.Err.Error())
 		return
 	}
-	fmt.Printf("ExpAST: %+v\n", ae.ToString())
+	//fmt.Printf("ExpAST: %+v\n", ae.ToString())
 	defer func() {
 		if e := recover(); e != nil {
 			fmt.Println("ERROR: ", e)
